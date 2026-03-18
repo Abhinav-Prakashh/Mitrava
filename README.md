@@ -72,6 +72,35 @@ All triggers are objective and third-party verifiable. No manual claim filing re
 
 Phase 1 uses rule-based logic. ML models integrated from Phase 2 onward.
 
+
+## 🛡️ Adversarial Defense & Anti-Spoofing Strategy
+
+> Phase 1 Market Crash Response — GPS fraud ring scenario
+
+### Spotting Fake GPS from a Real Stranded Worker
+
+- **Teleportation check** — GPS jumping 2km+ in under 60 seconds is physically impossible on a delivery bike. Auto-flag.
+- **Zone history** — Real workers have weeks of GPS history in their zone. A new account appearing only during disruption events is suspicious by definition.
+- **Device fingerprinting** — Spoofing tools like Fake GPS leave signatures: altitude always 0, perfect accuracy radius, provider string anomalies.
+- **Platform activity** — A worker "stranded in the zone" with zero app activity in the last 6 hours didn't just appear. Cross-reference platform open events.
+
+### What Data Catches a Fraud Ring
+
+- **Claim velocity spike** — Real workers file claims over 30–90 minutes. A ring files dozens within 5 minutes of a trigger.
+- **Account age clustering** — 20+ accounts filing in the same event, all created within the same 72-hour window = coordinated registration.
+- **Device ID overlap** — Multiple accounts filing from the same device or IP subnet is a hard fraud signal.
+- **Payout destination clustering** — Different "workers" routing payouts to the same UPI ID or bank account. We hash and cross-reference at processing time.
+
+### Flagging Bad Actors Without Punishing Honest Ones
+
+**Two-tier response:**
+- **Auto-approve** — Workers with 4+ weeks of zone history, consistent GPS, and matching platform activity get instant payouts. No friction.
+- **Soft hold (2 hours)** — Workers triggering 2+ fraud signals get a temporary hold while we auto-cross-reference weather data and platform logs. Releases automatically if clean.
+
+**Graduated trust model** — New accounts (under 2 weeks) have a ₹200/day payout cap. Cap rises as workers build history, making bulk fake account registration economically pointless.
+
+**One-tap appeal** — Flagged workers get an instant SMS with a video appeal option. Cross-referenced against claimed GPS zone. Cleared in under 15 minutes if legitimate.
+
 ---
 
 ## Tech Stack
