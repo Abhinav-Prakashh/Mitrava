@@ -1,5 +1,5 @@
 # Mitrava — Parametric Income Insurance for Food Delivery Partners
-**Guidewire DEVTrails 2026** | Team of 5 | Web Platform
+**Guidewire DEVTrails 2026** 
 
 ---
 
