@@ -22,9 +22,8 @@ Earns ~₹600–900/day across two peak slots (10am–2pm, 6pm–11pm). A single
 
 ## Application Workflow
 ```
-Onboarding → Risk Profiling → Weekly Policy Activation
-→ Background Trigger Monitoring (hourly)
-→ Disruption Detected → Fraud Check → Auto Claim → UPI Payout
+Onboarding → Risk Profiling → Weekly Policy Activation → Background Trigger Monitoring (hourly)→ Disruption Detected → Fraud Check 
+→ Auto Claim → UPI Payout 
 → Admin Dashboard Updated
 ```
 
@@ -102,11 +101,11 @@ Phase 1 uses rule-based logic. ML models integrated from Phase 2 onward.
 ## Team
 | Member | Role |
 |--------|------|
-| TBD | Frontend |
-| TBD | Frontend |
-| TBD | Backend / Supabase |
-| TBD | ML/AI |
-| TBD | Integration / DevOps |
+| Abhinav Prakash | Frontend |
+| Kushagra Tyagi | Frontend |
+| Aarya Rai | Backend / Supabase |
+| Eshita Verma | ML/AI |
+| Gaurika Malviya | Integration / DevOps |
 
 ---
 
