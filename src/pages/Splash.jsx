@@ -15,7 +15,7 @@ export default function Splash() {
             ))}
           </nav>
           <div className="flex items-center gap-3">
-            <button onClick={() => navigate('/app/home')} className="text-sm font-semibold text-on-surface-variant px-4 py-2 hover:bg-surface-container-high rounded-lg transition-colors">
+            <button onClick={() => navigate('/login')} className="text-sm font-semibold text-on-surface-variant px-4 py-2 hover:bg-surface-container-high rounded-lg transition-colors">
               Login
             </button>
             <button onClick={() => navigate('/onboarding')} className="bg-primary text-on-primary text-sm font-semibold px-6 py-2.5 rounded-lg shadow-blue transition-transform active:scale-95">
