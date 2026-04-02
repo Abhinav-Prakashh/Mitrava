@@ -1,121 +1,115 @@
-import Card from '../components/ui/Card'
-import Badge from '../components/ui/Badge'
-import { weather } from '../data/mockData'
+import { useState, useEffect } from "react";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import L from "leaflet";
+import Card from "../components/ui/Card";
+import Badge from "../components/ui/Badge";
+import { cities } from '../data/cities'
 
-const weatherItems = [
-  { icon: 'rainy',       val: weather.rain.value, label: weather.rain.label, level: weather.rain.level, color: 'red'    },
-  { icon: 'thermometer', val: weather.temp.value, label: weather.temp.label, level: weather.temp.level, color: 'green'  },
-  { icon: 'air',         val: weather.aqi.value,  label: weather.aqi.label,  level: weather.aqi.level,  color: 'yellow' },
-]
+// Fix marker icon issue
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png",
+  iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
+});
 
 export default function RiskMap() {
+
+  // ✅ USER DATA
+  const profileData = localStorage.getItem("userProfile");
+  const profile = profileData ? JSON.parse(profileData) : null;
+
+  const [city, setCity] = useState(profile?.city || "Bangalore");
+
+  // 📍 CITY COORDINATES
+  const cityCoords = {
+    Bangalore: [12.9716, 77.5946],
+    Mumbai: [19.0760, 72.8777],
+    Delhi: [28.7041, 77.1025],
+    Chennai: [13.0827, 80.2707],
+  };
+
+  const position = cityCoords[city] || [20.5937, 78.9629];
+
+  // 🌧️ Fake weather logic
+  const getWeather = (city) => {
+    if (city === "Mumbai") return { rain: "120mm", temp: "30°C", aqi: "AQI 140" };
+    if (city === "Delhi") return { rain: "20mm", temp: "36°C", aqi: "AQI 250" };
+    return { rain: "80mm", temp: "32°C", aqi: "AQI 180" };
+  };
+
+  const weather = getWeather(city);
+
   return (
     <div className="flex flex-col gap-8">
 
-      <div className="flex items-start justify-between gap-4">
+      {/* HEADER */}
+      <div className="flex justify-between items-center">
         <div>
-          <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">Live Updates</p>
-          <h1 className="text-4xl lg:text-5xl font-extrabold tracking-tighter text-on-surface">
-            Regional Risk<br /><span className="text-primary">Density.</span>
+          <p className="text-xs font-bold text-gray-500">Live Updates</p>
+          <h1 className="text-4xl font-extrabold">
+            Regional Risk <span className="text-blue-600">Density.</span>
           </h1>
         </div>
-        <div className="flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-full">
-          <span className="material-symbols-outlined text-primary text-base">location_on</span>
-          <span className="text-sm font-bold text-on-surface">{weather.city}</span>
-          <span className="material-symbols-outlined text-on-surface-variant text-base">expand_more</span>
-        </div>
+
+        {/* CITY SELECT */}
+        <select
+          value={city}
+          onChange={(e) => setCity(e.target.value)}
+          className="px-4 py-2 border rounded-lg"
+        >
+          {cities.map(c => (
+  <option key={c}>{c}</option>
+))}
+        </select>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        {/* Map takes 2 cols */}
-        <div className="lg:col-span-2 flex flex-col gap-4">
-          {/* Map placeholder */}
-          <div className="relative rounded-xl overflow-hidden bg-surface-container-low h-96 lg:h-[480px]"
-            style={{
-              backgroundImage:`linear-gradient(rgba(0,86,210,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,86,210,0.04) 1px,transparent 1px)`,
-              backgroundSize:'40px 40px',
-            }}
-          >
-            {/* Risk blobs */}
-            <div className="absolute rounded-full opacity-35 bg-red-500"    style={{width:180,height:180,top:110,left:210}} />
-            <div className="absolute rounded-full opacity-35 bg-yellow-400" style={{width:130,height:130,top:65,right:130}} />
-            <div className="absolute rounded-full opacity-35 bg-green-500"  style={{width:110,height:110,bottom:90,left:90}} />
-            <div className="absolute rounded-full opacity-35 bg-green-500"  style={{width:100,height:100,top:45,left:65}} />
+        {/* 🗺️ REAL MAP */}
+        <div className="lg:col-span-2 h-[450px] rounded-xl overflow-hidden">
+          <MapContainer center={position} zoom={12} style={{ height: "100%", width: "100%" }}>
+            <TileLayer
+              attribution='© OpenStreetMap'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
 
-            {/* Map pins */}
-            <div className="absolute text-3xl drop-shadow-md" style={{top:118,left:225}}>📍</div>
-            <div className="absolute text-2xl drop-shadow-md" style={{top:58,right:138}}>📍</div>
-            <div className="absolute text-2xl drop-shadow-md" style={{bottom:98,left:98}}>📍</div>
-
-            {/* Floating label */}
-            <div className="absolute bottom-4 right-4 bg-surface-container-lowest rounded-xl px-4 py-3 shadow-soft">
-              <p className="text-xs font-bold uppercase tracking-wider text-error mb-0.5">⚠ High Risk Zone</p>
-              <p className="text-xs text-on-surface-variant">Your current area</p>
-            </div>
-
-            {/* City badge */}
-            <div className="absolute top-4 left-4 bg-surface-container-lowest/90 backdrop-blur-sm rounded-xl px-4 py-2 shadow-soft">
-              <p className="text-sm font-bold text-primary">📍 {weather.city}</p>
-            </div>
-          </div>
-
-          {/* Legend */}
-          <div className="flex gap-6">
-            {[
-              {color:'bg-green-500', label:'Safe Zone'},
-              {color:'bg-yellow-400',label:'Medium Risk'},
-              {color:'bg-red-500',   label:'High Risk'},
-            ].map(l => (
-              <div key={l.label} className="flex items-center gap-2">
-                <div className={`w-3 h-3 rounded-full ${l.color}`} />
-                <span className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">{l.label}</span>
-              </div>
-            ))}
-          </div>
+            <Marker position={position}>
+              <Popup>
+                📍 {city} <br /> High Risk Area
+              </Popup>
+            </Marker>
+          </MapContainer>
         </div>
 
-        {/* Weather sidebar */}
+        {/* WEATHER */}
         <div className="flex flex-col gap-4">
-          <Card label={`Weather Today · ${weather.city}`}>
-            <div className="flex flex-col gap-3">
-              {weatherItems.map(w => (
-                <div key={w.label} className="flex items-center gap-4 p-4 bg-surface-container-low rounded-xl">
-                  <span className="material-symbols-outlined text-primary text-2xl">{w.icon}</span>
-                  <div className="flex-1">
-                    <p className="text-base font-extrabold tracking-tighter text-on-surface">{w.val}</p>
-                    <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">{w.label}</p>
-                  </div>
-                  <Badge label={w.level} color={w.color} />
-                </div>
-              ))}
+
+          <Card label={`Weather Today · ${city}`}>
+            <div className="flex justify-between py-2">
+              <span>Rainfall</span>
+              <span className="font-bold">{weather.rain}</span>
+            </div>
+
+            <div className="flex justify-between py-2">
+              <span>Temperature</span>
+              <span className="font-bold">{weather.temp}</span>
+            </div>
+
+            <div className="flex justify-between py-2">
+              <span>Air Quality</span>
+              <span className="font-bold">{weather.aqi}</span>
             </div>
           </Card>
 
           <Card label="Disruption Forecast">
-            <p className="text-xs text-on-surface-variant font-medium mb-4">Next 24 hours</p>
-            {[
-              { time: 'Tonight 8PM',  event: 'Rain may intensify', risk: 'High'   },
-              { time: 'Tomorrow 6AM', event: 'AQI likely moderate', risk: 'Medium' },
-              { time: 'Tomorrow 2PM', event: 'Conditions improve',  risk: 'Low'    },
-            ].map(f => (
-              <div key={f.time} className="flex items-center justify-between py-3 border-b border-surface-container last:border-0">
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">{f.time}</p>
-                  <p className="text-sm font-semibold text-on-surface">{f.event}</p>
-                </div>
-                <Badge label={f.risk} color={f.risk === 'High' ? 'red' : f.risk === 'Medium' ? 'yellow' : 'green'} />
-              </div>
-            ))}
+            <p className="text-sm text-gray-600">
+              High risk conditions expected in {city}
+            </p>
           </Card>
 
-          <button className="w-full py-4 bg-primary text-on-primary font-bold rounded-lg shadow-blue transition-transform active:scale-95 flex items-center justify-center gap-2">
-            <span className="material-symbols-outlined text-base">shield</span>
-            Activate Protection
-          </button>
         </div>
-
       </div>
     </div>
-  )
+  );
 }
