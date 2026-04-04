@@ -114,7 +114,7 @@ Phase 1 uses rule-based logic. ML models integrated from Phase 2 onward.
 | ML | scikit-learn, XGBoost, Prophet |
 | Weather/AQI | OpenWeatherMap, AQICN (free tiers) |
 | Payments | Razorpay Test Mode |
-| Hosting | Cloudflare Pages |
+| Hosting | Vercel |
 
 ---
 
