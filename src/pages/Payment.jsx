@@ -39,7 +39,7 @@ export default function Payment() {
     }
 
     const options = {
-      // ✅ Razorpay TEST key — replace with live key in production
+      // ✅ Razorpay TEST key — to be replaced with live key in production
       key: 'rzp_test_SZ4drmwe840tNl',
 
       // Amount in paise (₹1 = 100 paise)
